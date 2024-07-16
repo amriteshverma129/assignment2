@@ -1,4 +1,4 @@
-import { AlbumCardProps } from "@/utils/Type";
+import { AlbumCardProps } from "@/utils/Type"; // Import the type for AlbumCardProps
 import React from "react";
 import Image from "next/image";
 
@@ -6,6 +6,7 @@ const AlbumCard = ({ album }: AlbumCardProps) => {
   return (
     <div className="album-item shadow mt-10">
       <div className="relative">
+        {/* Display the album cover or a default image if no cover is available */}
         <Image
           src={
             album.cover
@@ -18,6 +19,7 @@ const AlbumCard = ({ album }: AlbumCardProps) => {
           layout="responsive"
           className="album-cover w-full h-48 object-cover"
         />
+        {/* Conditionally render the Qobuz logo if the album is streaming */}
         {album.cover && (
           <Image
             src="/assets/images/qobuz.png"
@@ -36,4 +38,4 @@ const AlbumCard = ({ album }: AlbumCardProps) => {
   );
 };
 
-export default AlbumCard;
+export default AlbumCard; // Export the AlbumCard component

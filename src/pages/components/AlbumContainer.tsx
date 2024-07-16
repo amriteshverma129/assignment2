@@ -1,18 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import AlbumCard from "./AlbumCard";
 import { Album } from "@/utils/Type";
 import { ALL, FILTER_ARRAY, GET_ALBUM } from "@/utils/variables";
-import { fetchAlbums } from "../Functions/function";
+import { fetchAlbums } from "../functions/function";
 
 const AlbumContainer: React.FC = () => {
   const [albums, setAlbums] = useState<Album[]>([]);
   const [filter, setFilter] = useState<string>("All");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
+  // Function to fetch albums and update state
   const handleGetAlbums = async () => {
-    const albumList = await fetchAlbums();
-    setAlbums(albumList);
+    setErrorMessage("");
+    setIsLoading(true);
+    try {
+      const albumList = await fetchAlbums();
+      setAlbums(albumList);
+    } catch (error) {
+      if (error instanceof Error) setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  // Filtered albums based on selected filter
   const filteredAlbums = albums.filter((album) => {
     if (filter === ALL) return true;
     return album.source === filter;
@@ -20,7 +32,7 @@ const AlbumContainer: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4">
-      {!albums.length ? (
+      {albums.length === 0 && ( // Show button only if albums are not fetched and not loading
         <div className="flex justify-center mt-4">
           <button
             onClick={() => handleGetAlbums()}
@@ -29,7 +41,13 @@ const AlbumContainer: React.FC = () => {
             {GET_ALBUM}
           </button>
         </div>
-      ) : (
+      )}
+      {isLoading && (
+        <div className="flex justify-center mt-10">
+          <p className="text-gray-500">Loading albums...</p>
+        </div>
+      )}
+      {albums.length !== 0 && (
         <div>
           <div className="filter-buttons mt-4">
             {FILTER_ARRAY.map((source) => (
@@ -51,6 +69,9 @@ const AlbumContainer: React.FC = () => {
           </div>
         </div>
       )}
+      <span className="text-red-800 text-md block p-5 text-center">
+        {errorMessage}
+      </span>
     </div>
   );
 };
